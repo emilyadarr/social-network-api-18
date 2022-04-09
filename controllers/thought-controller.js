@@ -54,7 +54,7 @@ const thoughtController = {
           res.status(404).json({ message: 'No user found with this id!' });
           return;
         }
-        res.json(dbPizzaData);
+        res.json(dbUserData);
       })
       .catch(err => res.json(err));
   },
@@ -89,8 +89,10 @@ const thoughtController = {
     Thought.findOneAndUpdate(
       { _id: params.thoughtId },
       { $push: { reactions: body } },
-      { new: true }
+      { new: true, runValidators: true }
     )
+    .populate({ path: 'reactions', select: '-__v' })
+    .select('-__v')
     .then(dbThoughtData => {
       if (!dbThoughtData) {
         res.status(404).json({ message: 'No thought found with this id!' });
